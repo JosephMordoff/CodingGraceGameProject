@@ -252,7 +252,7 @@ def guard():
     # This is an "infinite loop" that keeps asking for input until the
     # player either escapes (return) or dies (GameOver exception).
     while True:
-        next_action = input("[run | door] > ").lower()
+        next_action = input("[run | door] > ").strip().lower()
 
         if next_action == "run" and guard_moved:
             you_died("The guard was faster than he looks and your world goes dark...")
@@ -440,6 +440,95 @@ def green_magic_room(player_info_arg):
         print("The magician waves his hand and you are whisked away...\n")
         return "flee"
 
+# ===========================================================================
+# Integrator-Black Room
+# ===========================================================================
+def black_room(player_info_arg):
+    """The Black Room is a kitchen where players can find food, water, or a hidden antidote."""
+     
+     # 1. ASCII art (optional but encouraged) 
+    def print_kitchen():
+        print()
+        print(r"      _.-.                                  _.-.     ")
+        print(r"     ((  ))                                ((  ))    ")
+        print(r"      \  /   .--.  ,-.                 .--.  \  /     ")
+        print(r"       )(   /    )/   )               /    )/   )     ")
+        print(r"      /  \ |    ||   |               |    ||   |      ")
+        print(r"     (    )|    ||   |               |    ||   |      ")
+        print(r"      `--' |    ||   |               |    ||   |      ")
+        print(r"     .-.   |    ||   |               |    ||   |      ")
+        print(r"    ((  )) |    ||   |               |    ||   |      ")
+        print(r"     \  /  |    ||   |               |    ||   |      ")
+        print(r"      )(   |    ||   |               |    ||   |      ")
+        print(r"     /  \  |.--.|\   |               |.--.|\   |     ")
+        print(r"    (    ) |    | ) ,'                |    | ) ,'     ")
+        print(r"     `--'  '-'  `-.'                  '-'  `-.'       ")
+        print(r"     ---------------------------------------------------  ")
+        print(r"     |  .--------------------------------------------.  |  ")
+        print(r"     |  |                                            |  |  ")
+        print(r"     |  |                                            |  |  ")
+        print(r"     |  |                                            |  |  ")
+        print(r"     |  '--------------------------------------------'  |  ")
+        print(r"     |  .--.  .--.  .--.  .--.  .--.  .--.  .--.  .--.  |  ")
+        print(r"     |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ")
+        print(r"     |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ")
+        print(r"     |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  ")
+        print(r"     |  '--'  '--'  '--'  '--'  '--'  '--'  '--'  '--'  |  ")
+        print(r"     '----------------------------------------------------'  ")
+        print()
+
+     # 2. Announce the room
+    print("\n========================================")
+    print("You have entered the Black Room Kitchen. It smells faintly of old bread and stale water.")
+    print("========================================")
+    print_kitchen()
+
+     # 3. Update player state ─── REQUIRED ──────────────────────────────────── 
+    player_info_arg["location"] = "Kitchen"
+    damage_or_healing = 0 
+    player_info_arg["health"] += damage_or_healing 
+    item = "Wooden Spoon"
+    if item not in player_info_arg["inventory"]:
+        player_info_arg["inventory"].append(item)
+        print(f"You found a {item} and added it to your inventory!")
+    player_info_arg["choices"].append("Kitchen")
+     
+     # 4. Display state ─── REQUIRED ──────────────────────────────────────────
+    show_player_info(player_info_arg)
+
+     # 5. Room narrative and interaction
+    while True:
+        print("\nWhat do you do?")
+        action = input("[eat bread | drink water | search cupboards | leave] > ").strip().lower()
+        if action == "eat bread":
+            damage_or_healing = 10
+            player_info_arg["health"] += damage_or_healing
+            print(f"You eat some old bread. It's a bit stale, but you gain {damage_or_healing} health!")
+        elif action == "drink water":
+            if "Antidote" in player_info_arg["inventory"]:
+                choice = input("You see murky water. Do you want to use the Antidote before drinking? [yes | no] > ").lower()
+                if choice == "yes":
+                    damage_or_healing = 5
+                    player_info_arg["health"] -= damage_or_healing
+                    player_info_arg["inventory"].remove("Antidote") 
+                    print(f"You use the Antidote. The water is still unpleasant, but purified. You lose {damage_or_healing} health from the shock.")
+                else:
+                    you_died("You ignored the Antidote and drank the murky water, succumbing to its toxins.")
+            else:
+                you_died("You drank the murky water. It was heavily poisoned, and you had no antidote!")
+        elif action == "search cupboards":
+            if "Antidote" not in player_info_arg["inventory"]:
+                player_info_arg["inventory"].append("Antidote")
+                print("You search the cupboards and find a vial labeled 'Antidote'!")
+            else:
+                print("You search the cupboards again but find nothing new.")
+        elif action == "leave":
+            print("You decide to leave the kitchen and head back to the dungeon.")
+            return "flee"
+        else:
+            print("That's not a valid action. Please choose 'eat bread', 'drink water', 'search cupboards', or 'leave'.")
+        if player_info_arg["health"] <= 0:
+            you_died("Your health dropped to zero in the kitchen!")
 
 # ===========================================================================
 # CONTROL FUNCTIONS
@@ -502,9 +591,8 @@ def start_new_adventure(player_info_arg):
     while True:
         print_new_dungeon()
         print("You enter a room, and you see a red door to your left "
-              "and blue and green doors to your right.")
-        door_picked = input("Do you pick the red door, blue door, "
-                            "or green door? > ")
+              "and blue and green doors to your right, and a black, brown, and purple door ahead.")
+        door_picked = input("What color door do you pick? > ")
 
         # We compare only the first few characters so that inputs like
         # "red door", "blue", or "green one" all work.
@@ -516,9 +604,14 @@ def start_new_adventure(player_info_arg):
             room_result = blissful_ignorance_of_illusion_room(player_info_arg)
         elif door.startswith("green"):
             room_result = green_magic_room(player_info_arg)
+        elif door.startswith("black"):
+            room_result = black_room(player_info_arg)
+        elif door.startswith("brown"):
+            room_result = brown_room(player_info_arg)
+        elif door.startswith("purple"):
+            room_result = purple_reflection_room(player_info_arg)
         else:
-            print("Sorry, it's either 'red', 'blue', or 'green' as the "
-                  "answer. You're the weakest link, goodbye!")
+            print("Sorry, it's either 'red', 'blue', 'green', 'brown', 'purple', or 'black' as the  answer. You're the weakest link, goodbye!")
             # Continue the loop so the player can try again.
             continue
 
