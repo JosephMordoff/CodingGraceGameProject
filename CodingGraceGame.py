@@ -597,7 +597,7 @@ def brown_room(player_info_arg):
         print("Yipeeeeeee!!!!!")
         you_died("You die alone in the cold darkness of space as you gasp for air only for your lungs to explode...")
     elif "drive" in action:
-        print("Here goes nothing...")
+        print("Here goes nothing... ")
         print("\n***You wake up in Dallas, Texas in 1963, and see JFK in a car. But you also see his shooter from where you woke up.****")
         action = input("\nDo you walk towards JFK for his autograph or walk towards his shooter")
 
