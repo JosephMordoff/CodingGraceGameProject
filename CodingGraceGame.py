@@ -530,6 +530,94 @@ def black_room(player_info_arg):
         if player_info_arg["health"] <= 0:
             you_died("Your health dropped to zero in the kitchen!")
 
+#============================================================================
+# BROWN ROOM
+#============================================================================
+# =============================================================================
+# TEST YOUR ROOM HERE
+# Uncomment and modify the line below to call your room function.
+# =============================================================================
+def brown_room(player_info_arg):
+    """The Brown Room: You wake up in a spaceship as it is getting sucked into a black hole."""
+
+    # Optional: call an ASCII art function here
+    print_black_hole = """
+                    .  .  .  *  .  .   .  .
+              .  *        .       .  *        .   .
+          .       .    ██████████████    .       .
+        .    .  ████████████████████████████  .
+       .    ████████████████████████████████████
+      .   ██████████████████████████████████████  .
+     .  ████████████████▓▓░░░░░░░▓▓████████████████
+     . ████████████▓▓░░░             ░░░▓███████████
+    . ████████████░░░                    ░░█████████ .
+    . ██████████░░░      brown            ░░████████ .
+    . ████████░░░        Room.....           ░░██████  .
+    . ██████████░░░                       ░░███████  .
+     . ███████████░░░                   ░░█████████ .
+     .  ████████████▓▓░░░           ░░░▓██████████  .
+      .  ████████████████▓▓░░░░░░▓▓██████████████  .
+       .   ██████████████████████████████████████  .
+        .    ████████████████████████████████████
+          .     ████████████████████████████  .
+              .    *  .  ██████████  .  *  .
+                    .  .  .  .  .  .  .
+    """
+    print("\nWelcome to the Brown Room, where you are in a spaceship that is getting sucked into a black hole.")
+    print(print_black_hole)
+
+
+    # --- Update player state (CONTRACT items 1 and 2) ---
+
+    player_info_arg["location"] = "Brown Room"
+    damage = 15
+    player_info_arg["health"] -= damage
+
+
+    item = "Glock"
+    if item not in player_info_arg["inventory"]:
+        player_info_arg["inventory"].append(item)
+        print(f"You found a {item} and added it to your inventory!")
+
+    player_info_arg["choices"].append("Brown Room")
+
+    # --- Display current state (CONTRACT item 3) ---
+    show_player_info(player_info_arg)
+
+
+    # --- Room narrative and interaction ---
+    print("The alarms of your spaceship are going off as you get sucked into a black hole.")
+    print("\nThere is an eject button for you to escape the spaceship but you also have enough fuel to drive into the black hole.")
+
+
+    action = input("Do you eject out of your spaceship or drive into the black hole? > ").lower()
+
+
+    if "eject" in action:
+        print("Yipeeeeeee!!!!!")
+        you_died("You die alone in the cold darkness of space as you gasp for air only for your lungs to explode...")
+    elif "drive" in action:
+        print("Here goes nothing...")
+        print("\n***You wake up in Dallas, Texas in 1963, and see JFK in a car. But you also see his shooter from where you woke up.****")
+        action = input("\nDo you walk towards JFK for his autograph or walk towards his shooter")
+
+
+        if "JFK" in action:
+            print("JFK!JFK! Can I get your autograph?!")
+            you_died("The shooter misses JFK and shoots you...")
+        elif "shooter" in action:
+            if "Glock" in player_info_arg["inventory"]:
+                print("\nYou walk towards the shooter and murk him with your glock.")
+                print("\n'Take this you son of a b*&*^.'")
+                you_won("You saved the last good US president and saved America!")
+            else:
+                return "flee"
+    else:
+        print("You hesitate too long. Your spaceship explodes")
+        return "flee"
+
+
+
 # ===========================================================================
 # CONTROL FUNCTIONS
 # ===========================================================================
