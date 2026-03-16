@@ -617,7 +617,44 @@ def brown_room(player_info_arg):
         return "flee"
 
 
+# ===========================================================================
+# PURPLE ROOM
+# ===========================================================================
+def purple_reflection_room(player_info_arg):
+    """The Purple Room: a quiet room for reflection and healing."""
+    print("\nYou have entered the Purple Room.")
+    print("Violet light spills from the crystals in the walls.")
+    print("In the center of the room sits a silver bowl filled with shimmering water.")
+    print("Someone whispers, 'Only those who pause may heal.'")
 
+    action = input("\n Do you (drink) from the bowl or (leave)? > ").lower()
+
+#Update player status
+    player_info_arg["location"] = "Purple Room"
+    healing =15
+    item= "Violet Crystal"
+    if action =="drink":
+        print("\nYou kneel besisde the bowl and take a sip of the water.")
+        print("Energy fills through you and your thoughts become clearer, you feel calm.")
+        player_info_arg["health"]+= healing
+        if item not in player_info_arg["inventory"]:
+            player_info_arg["inventory"].append(item)
+        print(f"You regain {healing} health and receive the {item}.")
+    else:
+        print("\n You decide not to disturb the strange magic of the room")
+        print("Even so, the peaceful air restores a little of your strength.")
+        player_info_arg["health"]+=5
+        print("You regain 5 health.")
+#keep health within allowed range
+    if player_info_arg["health"]>200:
+        player_info_arg["health"] =200
+    if player_info_arg["health"]<0:
+       player_info_arg["health"]=0
+
+    player_info_arg["choices"].append("Purple Room")
+    show_player_info(player_info_arg)
+
+    return player_info_arg
 # ===========================================================================
 # CONTROL FUNCTIONS
 # ===========================================================================
