@@ -712,7 +712,6 @@ def start_new_adventure(player_info_arg):
     Args:
         player_info_arg: The player state dictionary.
     """
-
     while True:
         print_new_dungeon()
         print("You enter a room, and you see a red door to your left "
@@ -723,6 +722,7 @@ def start_new_adventure(player_info_arg):
         # "red door", "blue", or "green one" all work.
         door = door_picked.strip().lower()
 
+        # added new rooms to the adventure loop
         if door.startswith("red"):
             room_result = painful_truth_of_reality_room(player_info_arg)
         elif door.startswith("blue"):
